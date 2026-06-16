@@ -92,7 +92,7 @@ with tab1:
             xaxis_tickangle=-45,
             margin=dict(b=80)
         )
-        st.plotly_chart(fig1, use_container_width=True)
+        st.plotly_chart(fig1, width='stretch')
         st.caption("⚠️ **Escala logarítmica activa:** Cada división multiplica el precio por 10. Permite comparar visualmente marcas con rangos de precio muy distintos sin deformar las cajas.")
     else:
         st.info("Selecciona marcas en la barra lateral para generar la visualización.")
@@ -120,7 +120,7 @@ with tab2:
             template='plotly_white',
             yaxis={'categoryorder': 'total ascending'}
         )
-        st.plotly_chart(fig2, use_container_width=True)
+        st.plotly_chart(fig2, width='stretch')
     else:
         st.info("Sin datos disponibles para generar el ranking de volumen.")
 
@@ -169,7 +169,7 @@ with tab3:
             fig3.add_hline(y=mediana_precio, line_dash='dash', line_color='gray')
             fig3.update_layout(template='plotly_white', showlegend=False)
             
-            st.plotly_chart(fig3, use_container_width=True)
+            st.plotly_chart(fig3, width='stretch')
             
             # --- OUTPUT DE APOYO DEL GRÁFICO 3 (KPIs y Tabla de Oportunidad) ---
             col_kpi1, col_kpi2 = st.columns(2)
@@ -223,7 +223,7 @@ with tab4:
             height=550
         )
         fig4.update_layout(template='plotly_white', xaxis_tickangle=-30, barmode='stack')
-        st.plotly_chart(fig4, use_container_width=True)
+        st.plotly_chart(fig4, width='stretch') 
         
         # --- NUEVO OUTPUT (EL QUINTO ELEMENTO): TABLA INTERACTIVA DE APOYO ---
         st.write("### 📈 Tabla de Potencial: % de Modelos en Alta Gama o Superior")

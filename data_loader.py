@@ -19,7 +19,7 @@ def limpiar_precio(valor):
 @st.cache_data
 def cargar_y_limpiar_datos(path_csv="Watches.csv"):
     # Carga inicial del archivo original
-    df = pd.read_csv(path_csv)
+    df = pd.read_csv(path_csv, low_memory=False)
     
     # 1. Limpieza de Año de producción (yop)
     if 'yop' in df.columns:
