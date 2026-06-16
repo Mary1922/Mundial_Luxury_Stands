@@ -1,0 +1,26 @@
+# Entornos virtuales
+venv/
+.venv/
+env/
+.env/
+
+# Archivos de caché de Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Archivos de configuración de VS Code y editores
+.vscode/
+.idea/
+
+# Archivos de sistema operativo
+.DS_Store
+Thumbs.db
+
+# Datos y logs (¡IMPORTANTE para tus CSVs!)
+# Si tus archivos de datos son muy grandes, 
+# descomenta la línea de abajo para evitar subirlos a GitHub
+# *.csv
+
+# Logs de Streamlit y otros
+*.loggit
