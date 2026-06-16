@@ -10,7 +10,71 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Cargar los datos limpios y filtrados (df_nuevos)
+# ============================================================
+# INYECCIÓN DE ARQUITECTURA DE DISEÑO CSS (CUSTOM STYLING)
+# ============================================================
+st.markdown("""
+    <style>
+    /* Configuración del tema general oscuro y tipografía limpia */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+    
+    html, body, [data-testid="stSidebarView"] {
+        font-family: 'Inter', sans-serif;
+    }
+    
+    /* Estilización del contenedor de advertencia metodológica */
+    .governance-card {
+        background-color: #1A1C23;
+        border-left: 5px solid #D4AF37;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
+    .governance-title {
+        color: #E5C158;
+        font-weight: 600;
+        margin-top: 0px;
+        font-size: 1.15rem;
+    }
+    .governance-text {
+        color: #E2E8F0;
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+    
+    /* Customización de las pestañas superiores (Tabs) */
+    button[data-baseweb="tab"] {
+        font-size: 1rem !important;
+        font-weight: 600 !important;
+        color: #94A3B8 !important;
+        border-bottom-width: 2px !important;
+    }
+    button[data-baseweb="tab"][aria-selected="true"] {
+        color: #E5C158 !important;
+        border-bottom-color: #D4AF37 !important;
+    }
+    
+    /* Bloques de KPIs Métricas */
+    div[data-testid="stMetricValue"] {
+        color: #E5C158 !important;
+        font-weight: 700 !important;
+        font-size: 2.2rem !important;
+    }
+    div[data-testid="stMetricLabel"] {
+        color: #94A3B8 !important;
+        text-transform: uppercase;
+        font-size: 0.8rem !important;
+        letter-spacing: 1px;
+    }
+    </style>
+""", unsafe_unsafe_with_transparent_background=True, unsafe_allow_html=True)
+
+# Paleta cromática corporativa para gráficos de Plotly
+PALETA_LUJO_DISCRETA = ['#D4AF37', '#718096', '#4A5568', '#A0AEC0', '#2D3748', '#CBD5E0']
+PALETA_TIERS_SEQUENTIAL = ['#A5D6A7', '#64B5F6', '#FB8C00', '#E53935'] # Degradado de menor a mayor valor estricto
+
+# Cargar los datos limpios y filtrados
 try:
     df_campaign = cargar_y_limpiar_datos("Watches.csv")
 except Exception as e:
@@ -18,28 +82,27 @@ except Exception as e:
     st.stop()
 
 # ============================================================
-# SECCIÓN DE GOBERNANZA Y ADVERTENCIA DE SESGOS
+# SECCIÓN DE GOBERNANZA UTILIZANDO INTERFAZ HTML/CSS PREMIUM
 # ============================================================
-st.title("🎯 Estrategia de Campaña: Mundial Luxury Stands")
+st.markdown('<h1 style="color: #F3F4F6; font-weight: 700; letter-spacing: -0.5px;">🎯 Estrategia de Campaña: Mundial Luxury Stands</h1>', unsafe_allow_html=True)
 
-st.warning("""
-### ⚠️ ADVERTENCIA METODOLÓGICA Y MITIGACIÓN DE SESGOS
-**Análisis de Calidad de Datos (Gobernanza y Data Ethics):**
-El dataset original presentaba un **74.73% de valores nulos (NaN)** en la columna de condición del reloj. 
-
-Asumir arbitrariamente que los registros vacíos corresponden a unidades nuevas para incrementar artificialmente el volumen de la campaña representaría un **Sesgo de Selección Masivo**. La lógica de mercado demuestra que los vendedores omiten la condición principalmente en piezas de segunda mano o vintage. 
-
-**Acción de Mitigación:** Este cuadro de mando trabaja **únicamente** con los registros con etiquetado explícito `New` y `Unworn` (universo de **23,146 anuncios seguros**), garantizando la integridad de las proyecciones financieras de la campaña.
-""")
-
-st.write("---")
+st.markdown("""
+<div class="governance-card">
+    <div class="governance-title">⚠️ ADVERTENCIA METODOLÓGICA Y MITIGACIÓN DE SESGOS</div>
+    <div class="governance-text">
+        <strong>Análisis de Calidad de Datos (Gobernanza y Data Ethics):</strong><br>
+        El dataset original presentaba un <strong>74.73% de valores nulos (NaN)</strong> en la columna de condición del reloj. 
+        Asumir arbitrariamente que los registros vacíos corresponden a unidades nuevas para incrementar artificialmente el volumen de la campaña representaría un <em>Sesgo de Selección Masivo</em>.<br><br>
+        <strong>Acción de Mitigación:</strong> Este cuadro de mando trabaja <strong>únicamente</strong> con los registros con etiquetado explícito <code>New</code> y <code>Unworn</code> (universo de <strong>23,146 anuncios seguros</strong>), garantizando la integridad absoluta de las proyecciones financieras de la campaña.
+    </div>
+</div>
+""", unsafe_allow_html=True)
 
 # ============================================================
 # BARRA LATERAL: FILTROS CRUZADOS DINÁMICOS
 # ============================================================
-st.sidebar.header("🎛️ Filtros de Campaña")
+st.sidebar.markdown('<h2 style="color: #E5C158; font-size: 1.3rem;">🎛️ Filtros de Campaña</h2>', unsafe_allow_html=True)
 
-# Filtro interactivo de Marcas (Inicializado con las TOP 12 automáticas)
 top12_marcas_auto = list(df_campaign['brand'].value_counts().head(12).index)
 marcas_disponibles = sorted(df_campaign['brand'].dropna().unique())
 
@@ -49,19 +112,16 @@ marcas_seleccionadas = st.sidebar.multiselect(
     default=top12_marcas_auto
 )
 
-# Aplicamos el filtro dinámico intermedio
 df_filtrado = df_campaign[df_campaign['brand'].isin(marcas_seleccionadas)]
 
-# Filtro secundario cruzado: Tier de Lujo
 if 'tier_lujo' in df_filtrado.columns:
     tiers_disponibles = sorted(df_filtrado['tier_lujo'].dropna().unique())
     tiers_seleccionados = st.sidebar.multiselect("Filtrar por Tier de Lujo:", options=tiers_disponibles, default=tiers_disponibles)
     df_filtrado = df_filtrado[df_filtrado['tier_lujo'].isin(tiers_seleccionados)]
 
 # ============================================================
-# MAQUETACIÓN DE LAS PESTAÑAS DEL EDA (TUS 5 VISUALIZACIONES)
+# MAQUETACIÓN DE LAS PESTAÑAS DEL EDA
 # ============================================================
-
 tab1, tab2, tab3, tab4 = st.tabs([
     "📦 Distribución de Precios", 
     "📊 Presencia en Mercado", 
@@ -73,7 +133,7 @@ tab1, tab2, tab3, tab4 = st.tabs([
 # PESTAÑA 1: Gráfico 1 (Diagrama de Cajas Logarítmico)
 # ------------------------------------------------------------
 with tab1:
-    st.subheader("Análisis de Dispersión y Rangos de Precio")
+    st.markdown('<h3 style="color: #F3F4F6;">Análisis de Dispersión y Rangos de Precio</h3>', unsafe_allow_html=True)
     if len(df_filtrado) > 0:
         fig1 = px.box(
             df_filtrado,
@@ -84,10 +144,13 @@ with tab1:
             title='Distribución de precios por marca de relojería de lujo (escala logarítmica)',
             labels={'brand': 'Marca', 'price': 'Precio de venta — USD (escala log)'},
             points=False,
-            height=600
+            height=600,
+            color_discrete_sequence=PALETA_LUJO_DISCRETA
         )
         fig1.update_layout(
-            template='plotly_white',
+            template='plotly_dark',
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)',
             showlegend=False,
             xaxis_tickangle=-45,
             margin=dict(b=80)
@@ -101,7 +164,7 @@ with tab1:
 # PESTAÑA 2: Gráfico 2 (Barras Horizontales de Volumen)
 # ------------------------------------------------------------
 with tab2:
-    st.subheader("Volumen y Participación de la Oferta")
+    st.markdown('<h3 style="color: #F3F4F6;">Volumen y Participación de la Oferta</h3>', unsafe_allow_html=True)
     if len(df_filtrado) > 0:
         conteo_marcas = df_filtrado['brand'].value_counts().reset_index()
         conteo_marcas.columns = ['marca', 'numero_anuncios']
@@ -114,10 +177,13 @@ with tab2:
             title='¿Qué marcas de relojes de lujo tienen mayor presencia en el mercado?',
             labels={'numero_anuncios': 'Número de anuncios activos', 'marca': 'Marca'},
             text='numero_anuncios',
-            height=550
+            height=550,
+            color_discrete_sequence=['#D4AF37'] # Forzamos barra dorada corporativa
         )
         fig2.update_layout(
-            template='plotly_white',
+            template='plotly_dark',
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)',
             yaxis={'categoryorder': 'total ascending'}
         )
         st.plotly_chart(fig2, width='stretch')
@@ -128,7 +194,7 @@ with tab2:
 # PESTAÑA 3: Gráfico 3 (Burbujas y Cuadrantes Estratégicos)
 # ------------------------------------------------------------
 with tab3:
-    st.subheader("Matriz Estratégica: Antigüedad vs. Pricing")
+    st.markdown('<h3 style="color: #F3F4F6;">Matriz Estratégica: Antigüedad vs. Pricing</h3>', unsafe_allow_html=True)
     
     df_yop_valido = df_filtrado.dropna(subset=['yop', 'price'])
     
@@ -144,7 +210,6 @@ with tab3:
             .reset_index()
         )
         
-        # Filtro de seguridad metodológico
         MIN_MODELOS = 5
         resumen_oportunidad = resumen_oportunidad[resumen_oportunidad['n_modelos'] >= MIN_MODELOS]
         
@@ -159,24 +224,30 @@ with tab3:
                 size='n_modelos',
                 color='brand',
                 text='brand',
-                title='¿Qué marcas combinan catálogo reciente y precio premium? (tamaño = nº de modelos nuevos disponibles)',
+                title='¿Qué marcas combinan catálogo reciente y precio premium? (tamaño = nº de modelos nuevos)',
                 labels={'anio_medio': 'Año medio de fabricación', 'precio_medio': 'Precio medio (USD)', 'brand': 'Marca'},
                 size_max=40,
-                height=600
+                height=600,
+                color_discrete_sequence=PALETA_LUJO_DISCRETA
             )
             fig3.update_traces(textposition='top center')
-            fig3.add_vline(x=mediana_anio, line_dash='dash', line_color='gray')
-            fig3.add_hline(y=mediana_precio, line_dash='dash', line_color='gray')
-            fig3.update_layout(template='plotly_white', showlegend=False)
+            fig3.add_vline(x=mediana_anio, line_dash='dash', line_color='#A0AEC0')
+            fig3.add_hline(y=mediana_precio, line_dash='dash', line_color='#A0AEC0')
+            fig3.update_layout(
+                template='plotly_dark',
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)',
+                showlegend=False
+            )
             
             st.plotly_chart(fig3, width='stretch')
             
-            # --- OUTPUT DE APOYO DEL GRÁFICO 3 (KPIs y Tabla de Oportunidad) ---
+            # KPIs Estilizados con CSS del header superior
             col_kpi1, col_kpi2 = st.columns(2)
             col_kpi1.metric("Mediana Global de Año", f"{mediana_anio:.1f}")
             col_kpi2.metric("Mediana Global de Precio", f"${mediana_precio:,.0f}")
             
-            st.write("#### 🚀 Marcas en el Cuadrante de Oportunidad (Catálogo Reciente + Precio Alto):")
+            st.markdown('<h4 style="color: #E5C158; margin-top: 20px;">🚀 Marcas en el Cuadrante de Oportunidad (Catálogo Reciente + Precio Alto):</h4>', unsafe_allow_html=True)
             oportunidad = resumen_oportunidad[
                 (resumen_oportunidad['anio_medio'] >= mediana_anio) &
                 (resumen_oportunidad['precio_medio'] >= mediana_precio)
@@ -199,44 +270,48 @@ with tab3:
 # PESTAÑA 4: Gráfico 4 y Tabla 5 (Composición de Tiers de Lujo)
 # ------------------------------------------------------------
 with tab4:
-    st.subheader("Estructura de Mercado por Niveles de Lujo")
+    st.markdown('<h3 style="color: #F3F4F6;">Estructura de Mercado por Niveles de Lujo</h3>', unsafe_allow_html=True)
     
     if 'tier_lujo' in df_filtrado.columns and len(df_filtrado) > 0:
         conteo_tier_marca = (
             df_filtrado
-            .groupby(['brand', 'tier_lujo'])
+            .groupby(['brand', 'tier_lujo'], observed=False)
             .size()
             .reset_index(name='n_modelos')
         )
         
-        orden_tiers = ['1. Entrada', '2. Premium', '3. Alta Gama', '4. Ultra-Lujo']
-        
-        # Gráfico 4: Barras Apiladas
+        # Gráfico 4: Barras Apiladas con paleta secuencial elegante
         fig4 = px.bar(
             conteo_tier_marca,
             x='brand',
             y='n_modelos',
             color='tier_lujo',
-            category_orders={'tier_lujo': orden_tiers},
             title='¿Qué rango de precios ofrece cada marca? (nº de modelos nuevos por Tier de Lujo)',
             labels={'brand': 'Marca', 'n_modelos': 'Número de modelos', 'tier_lujo': 'Tier de Lujo'},
-            height=550
+            height=550,
+            color_discrete_sequence=PALETA_TIERS_SEQUENTIAL
         )
-        fig4.update_layout(template='plotly_white', xaxis_tickangle=-30, barmode='stack')
+        fig4.update_layout(
+            template='plotly_dark',
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)',
+            xaxis_tickangle=-30, 
+            barmode='stack'
+        )
         st.plotly_chart(fig4, width='stretch')
         
-        # --- NUEVO OUTPUT (EL QUINTO ELEMENTO): TABLA INTERACTIVA DE APOYO ---
-        st.write("### 📈 Tabla de Potencial: % de Modelos en Alta Gama o Superior")
+        st.markdown('<h3 style="color: #E5C158; margin-top: 25px;">📈 Tabla de Potencial: % de Modelos en Alta Gama o Superior</h3>', unsafe_allow_html=True)
         
+        # Pivote seguro respetando categorías vacías
         tabla_pct = conteo_tier_marca.pivot(index='brand', columns='tier_lujo', values='n_modelos').fillna(0)
         
+        orden_tiers = ['1. Entrada', '2. Premium', '3. Alta Gama', '4. Ultra-Lujo']
         for tier in orden_tiers:
             if tier not in tabla_pct.columns:
                 tabla_pct[tier] = 0
                 
         tabla_pct['total'] = tabla_pct[orden_tiers].sum(axis=1)
         
-        # Evitamos divisiones por cero por si acaso
         tabla_pct['% Alta Gama o superior'] = 0.0
         mask = tabla_pct['total'] > 0
         tabla_pct.loc[mask, '% Alta Gama o superior'] = (
@@ -247,7 +322,6 @@ with tab4:
         tabla_reporte.index.name = "Marca"
         tabla_reporte.columns = ["Total Modelos", "% Alta Gama o Superior"]
         
-        # Renderizado interactivo y elegante en la web de Streamlit
         st.dataframe(tabla_reporte, use_container_width=True)
         
     else:

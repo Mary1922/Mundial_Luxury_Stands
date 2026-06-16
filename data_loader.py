@@ -18,7 +18,7 @@ def limpiar_precio(valor):
 
 @st.cache_data
 def cargar_y_limpiar_datos(path_csv="Watches.csv"):
-    # Carga inicial del archivo original
+    # Carga inicial con optimización de memoria
     df = pd.read_csv(path_csv, low_memory=False)
     
     # 1. Limpieza de Año de producción (yop)
@@ -40,18 +40,14 @@ def cargar_y_limpiar_datos(path_csv="Watches.csv"):
     else:
         df_nuevos = df.copy()
         
-    # Eliminamos duplicados fantasmas de columnas si existieran
     df_nuevos = df_nuevos.loc[:, ~df_nuevos.columns.duplicated()]
     
     # ============================================================
-    # 🌟 RECREACIÓN AUTOMÁTICA DE LA VARIABLE DE NEGOCIO: TIER DE LUJO
+    # 🌟 RECREACIÓN AUTOMÁTICA Y ORDENACIÓN CATEGÓRICA DEL TIER
     # ============================================================
-    # Definimos los cortes de precio para clasificar el nivel de lujo del reloj
-    # Entrada (< $5,000) | Premium ($5,000 - $15,000) | Alta Gama ($15,000 - $50,000) | Ultra-Lujo (> $50,000)
-    
     def asignar_tier(precio):
         if pd.isna(precio):
-            return "1. Entrada"  # Por seguridad o manejo de nulos
+            return "1. Entrada"
         if precio < 5000:
             return "1. Entrada"
         elif precio < 15000:
@@ -61,10 +57,12 @@ def cargar_y_limpiar_datos(path_csv="Watches.csv"):
         else:
             return "4. Ultra-Lujo"
             
-    # Creamos la columna sobre la marcha para que Streamlit la tenga disponible siempre
     df_nuevos['tier_lujo'] = df_nuevos['price'].apply(asignar_tier)
     
-    # Homogeneizar columnas secundarias si no existen o se llaman diferente
+    # IMPORTANTE: Forzamos a Pandas a entender el orden jerárquico para los gráficos
+    orden_tiers = ['1. Entrada', '2. Premium', '3. Alta Gama', '4. Ultra-Lujo']
+    df_nuevos['tier_lujo'] = pd.Categorical(df_nuevos['tier_lujo'], categories=orden_tiers, ordered=True)
+    
     if 'case_material' in df_nuevos.columns and 'casem' not in df_nuevos.columns:
         df_nuevos['casem'] = df_nuevos['case_material']
     elif 'casem' not in df_nuevos.columns:
