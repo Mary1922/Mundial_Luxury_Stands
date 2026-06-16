@@ -320,7 +320,7 @@ with tab1:
             annotations=[dict(
                 text="⚠️ Escala logarítmica: cada división multiplica el precio por 10. Permite comparar visualmente marcas con rangos de precio muy distintos.",
                 xref="paper", yref="paper",
-                x=0, y=-0.18, showarrow=False,
+                x=0, y=-0.28, showarrow=False,
                 font=dict(size=11, color="#94A3B8")
             )]
         )
@@ -343,7 +343,13 @@ with tab2:
                 )
                 .reset_index()
             )
-            
+
+            resumen_oportunidad['anio_medio'] = (
+                resumen_oportunidad['anio_medio']
+                .round()
+                .astype(int)
+            )
+
             MIN_MODELOS = 5
             resumen_oportunidad = resumen_oportunidad[resumen_oportunidad['n_modelos'] >= MIN_MODELOS]
             
@@ -405,6 +411,7 @@ with tab2:
                     omega = resumen_oportunidad[resumen_oportunidad['brand'].astype(str).str.contains('Omega', case=False, na=False)]
                     if not omega.empty and 'Omega' not in oportunidad['brand'].astype(str).tolist():
                         oportunidad = pd.concat([oportunidad, omega]).drop_duplicates(subset=['brand'])
+                        oportunidad['anio_medio'] = oportunidad['anio_medio'].round().astype(int)
                     st.dataframe(oportunidad.rename(columns={
                         'brand': 'Marca',
                         'anio_medio': 'Año Medio Fabricación',
@@ -492,6 +499,29 @@ with tab2:
                             max_value=100
                         )
                     }
+                )
+                # ============================================================
+                # EXPERIENCIA PREMIUM FINAL
+                # ============================================================
+
+                st.markdown("---")
+
+                st.markdown("""
+                <div class="executive-card">
+                    <h4>🎁 Experiencia Premium para el Cliente</h4>
+                    <p>
+                    Como elemento diferenciador de la propuesta de valor,
+                    los clientes seleccionados recibirán un grabado exclusivo
+                    personalizado en su reloj de lujo.
+                    </p>
+                </div>
+                """, unsafe_allow_html=True)
+
+                if st.button("✨ Detalle Premium"):
+                    st.image(
+                        "Pictures/grabado.png",
+                        caption="Grabado personalizado incluido como detalle exclusivo",
+                        use_container_width=True
                 )
         else:
             st.warning("Estructura de categorización de portafolios 'tier_lujo' ausente en la fuente de datos actual.")
