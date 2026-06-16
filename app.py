@@ -223,7 +223,7 @@ with tab4:
             height=550
         )
         fig4.update_layout(template='plotly_white', xaxis_tickangle=-30, barmode='stack')
-        st.plotly_chart(fig4, width='stretch') 
+        st.plotly_chart(fig4, width='stretch')
         
         # --- NUEVO OUTPUT (EL QUINTO ELEMENTO): TABLA INTERACTIVA DE APOYO ---
         st.write("### 📈 Tabla de Potencial: % de Modelos en Alta Gama o Superior")
