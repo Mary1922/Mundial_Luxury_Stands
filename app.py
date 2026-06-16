@@ -117,7 +117,11 @@ compas_df.loc[compas_df['grupo'] == 'No Privilegiado', 'asignacion_positiva'] = 
 
 # 4. BARRA LATERAL (FILTROS)
 st.sidebar.header("🎯 Filtros de Selección")
-marcas_disponibles = sorted(df['brand'].unique())
+
+# Limpiamos los valores nulos (NaN) y nos aseguramos de que todo sea texto antes de ordenar
+marcas_limpias = df['brand'].dropna().unique()
+marcas_disponibles = sorted([str(marca) for marca in marcas_limpias])
+
 marcas_seleccionadas = st.sidebar.multiselect("Filtrar por Marcas", marcas_disponibles, default=marcas_disponibles[:5])
 
 # Filtrado del dataset comercial
