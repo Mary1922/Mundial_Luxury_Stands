@@ -106,8 +106,10 @@ def cargar_datos():
         'grupo': np.random.choice(['Privilegiado', 'No Privilegiado'], size=n_samples, p=[0.6, 0.4]),
         'asignacion_positiva': np.random.choice([1, 0], size=n_samples, p=[0.7, 0.3])
     })
-    # Forzamos un sesgo inicial en el grupo no privilegiado para el ejercicio
-    compas_data.loc[compas_data['grupo'] == 'No Privilegiado', 'asignacion_positiva'] = np.random.choice([1, 0], size=400, p=[0.45, 0.55])
+
+    # Buscamos cuántas filas cumplen la condición y generamos el tamaño exacto (size)
+    n_no_priv = (compas_data['grupo'] == 'No Privilegiado').sum()
+    compas_data.loc[compas_data['grupo'] == 'No Privilegiado', 'asignacion_positiva'] = np.random.choice([1, 0], size=n_no_priv, p=[0.45, 0.55])
     
     return df, compas_data
 
