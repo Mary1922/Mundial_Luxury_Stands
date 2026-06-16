@@ -93,7 +93,7 @@ button[data-baseweb="tab"] {
 
 # 3. CARGA DE DATOS SEPARADA (Para evitar conflictos de caché)
 @st.cache_data
-def cargar_datos_relojes():
+def cargar_datos_relojes_v2():
     return pd.read_csv("Watches.csv")
 
 @st.cache_data
@@ -108,7 +108,7 @@ def cargar_datos_compas():
     return compas_data
 
 # Llamamos a cada función por separado
-df = cargar_datos_relojes()
+df = cargar_datos_relojes_v2()
 compas_df = cargar_datos_compas()
 
 # Ajuste dinámico del sesgo para el ejercicio (fuera de la función para que no falle el tamaño)
