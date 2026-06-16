@@ -68,7 +68,7 @@ st.markdown("""
         letter-spacing: 1px;
     }
     </style>
-""", unsafe_unsafe_with_transparent_background=True, unsafe_allow_html=True)
+""", unsafe_allow_html=True)
 
 # Paleta cromática corporativa para gráficos de Plotly
 PALETA_LUJO_DISCRETA = ['#D4AF37', '#718096', '#4A5568', '#A0AEC0', '#2D3748', '#CBD5E0']
