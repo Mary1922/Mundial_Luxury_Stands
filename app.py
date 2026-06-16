@@ -51,7 +51,7 @@ df_filtrado = df_campaign[df_campaign['brand'].isin(marcas_seleccionadas)]
 
 # Filtro 2: Tier de Lujo (Basado en el df ya filtrado por marca)
 tiers_disponibles = sorted(df_filtrado['tier_lujo'].dropna().unique()) if 'tier_lujo' in df_filtrado.columns else []
-if Tiers_disponibles:
+if tiers_disponibles:
     tiers_seleccionados = st.sidebar.multiselect("Filtrar por Segmento de Lujo:", options=tiers_disponibles, default=tiers_disponibles)
     df_filtrado = df_filtrado[df_filtrado['tier_lujo'].isin(tiers_seleccionados)]
 
