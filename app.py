@@ -91,14 +91,13 @@ button[data-baseweb="tab"] {
 </style>
 """, unsafe_allow_html=True)
 
-# 3. CARGA DE DATOS (Mantenemos tu lógica de negocio)
+# 3. CARGA DE DATOS SEPARADA (Para evitar conflictos de caché)
 @st.cache_data
-def cargar_datos():
-    # Cargamos tus datos del archivo Watches
-    df = pd.read_csv("Watches.csv")
-    
-    # Simulamos o preparamos un dataset basado en COMPAS para tu módulo de ética y sesgo
-    # Esto asegura que tus variables sigan funcionando perfectamente
+def cargar_datos_relojes():
+    return pd.read_csv("Watches.csv")
+
+@st.cache_data
+def cargar_datos_compas():
     import numpy as np
     np.random.seed(42)
     n_samples = 1000
@@ -106,14 +105,15 @@ def cargar_datos():
         'grupo': np.random.choice(['Privilegiado', 'No Privilegiado'], size=n_samples, p=[0.6, 0.4]),
         'asignacion_positiva': np.random.choice([1, 0], size=n_samples, p=[0.7, 0.3])
     })
+    return compas_data
 
-    # Buscamos cuántas filas cumplen la condición y generamos el tamaño exacto (size)
-    n_no_priv = (compas_data['grupo'] == 'No Privilegiado').sum()
-    compas_data.loc[compas_data['grupo'] == 'No Privilegiado', 'asignacion_positiva'] = np.random.choice([1, 0], size=n_no_priv, p=[0.45, 0.55])
-    
-    return df, compas_data
+# Llamamos a cada función por separado
+df = cargar_datos_relojes()
+compas_df = cargar_datos_compas()
 
-df, compas_df = cargar_datos()
+# Ajuste dinámico del sesgo para el ejercicio (fuera de la función para que no falle el tamaño)
+n_no_priv = (compas_df['grupo'] == 'No Privilegiado').sum()
+compas_df.loc[compas_df['grupo'] == 'No Privilegiado', 'asignacion_positiva'] = np.random.choice([1, 0], size=n_no_priv, p=[0.45, 0.55])
 
 # 4. BARRA LATERAL (FILTROS)
 st.sidebar.header("🎯 Filtros de Selección")
