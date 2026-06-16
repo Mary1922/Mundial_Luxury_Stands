@@ -1,0 +1,21 @@
+# 🎯 Cuadro de Mando Estratégico: Mercado de Relojes de Lujo (Campaña Nuevos)
+
+Este proyecto despliega una aplicación web analítica interactiva desarrollada con **Streamlit** y **Plotly** orientada a segmentar el mercado objetivo para una campaña de venta de relojes de lujo nuevos, mitigando activamente sesgos de datos e inconsistencias estadísticas.
+
+## 🧠 Mitigación de Sesgos e Integridad de Datos (Data Ethics)
+Durante la fase de exploración del dataset (`Watches.csv`), se detectó que la variable de condición presentaba un **74.73% de registros nulos (NaN)**. 
+
+Bajo criterios rigurosos de Ciencia de Datos y Gobierno del Dato, se determinó que asumir que dichos nulos equivalían a piezas nuevas constituía un **Sesgo de Selección crítico**. El modelo fue diseñado aislando de forma estricta las categorías comprobadas `New` y `Unworn`, logrando un universo limpio y robusto de **23,146 registros listos para la optimización comercial**.
+
+## 🛠️ Arquitectura Modular del Código
+El software se ha estructurado siguiendo las mejores prácticas de ingeniería de software para garantizar la mantenibilidad:
+* `data_loader.py`: Contiene los algoritmos de carga, expresiones regulares para la normalización de variables numéricas complejas (limpieza de cadenas de texto y conversión a tipos `Float64` y `Int64` de Pandas) y el filtrado del sesgo.
+* `app.py`: Gestiona la interfaz gráfica, los componentes de filtrado dinámico cruzado y la renderización de las visualizaciones de distribución a pantalla completa.
+
+## 🚀 Requisitos e Instalación Local
+Desarrollado en un entorno **Ubuntu (WSL)**. Para replicar la ejecución local:
+
+1. Clonar el repositorio:
+   ```bash
+   git clone 
+   cd relojes-lujo-dashboard
