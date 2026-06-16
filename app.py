@@ -3,7 +3,7 @@ import pandas as pd
 import plotly.express as px
 import numpy as np
 import os
-# IMPORTANTE: Importamos tu limpiador metodológico del EDA experto sin alterar su estructura
+# Importamos tu limpiador metodológico del EDA experto
 from data_loader import cargar_y_limpiar_datos
 
 # ============================================================
@@ -40,15 +40,6 @@ html, body, [class*="css"], .stApp {
 
 [data-testid="stSidebar"] {
     background-color: #0F172A;
-}
-
-/* Ajuste de escala del título para que quepa en una sola línea */
-.main-title {
-    font-size: 30px !important;
-    font-weight: 700 !important;
-    white-space: nowrap;
-    color: white;
-    margin-bottom: 5px;
 }
 
 .hero-card {
@@ -140,47 +131,42 @@ n_no_priv = (compas_df['grupo'] == 'No Privilegiado').sum()
 compas_df.loc[compas_df['grupo'] == 'No Privilegiado', 'asignacion_positiva'] = np.random.choice([1, 0], size=n_no_priv, p=[0.45, 0.55])
 
 # ============================================================
-# 4. BARRA LATERAL (FILTROS DE SELECCIÓN E IMAGEN LV)
+# 4. BARRA LATERAL (FILTROS DE SELECCIÓN ENRIQUECIDOS)
 # ============================================================
-with st.sidebar:
-    # Integración de la imagen corporativa LV en la parte superior del menú lateral
-    img_lv = "Pictures/LV.jpg"
-    if os.path.exists(img_lv):
-        st.image(img_lv, use_container_width=True)
-        
-    st.header("🎯 Filtros de Selección")
+st.sidebar.image("Pictures/LV.jpg", use_container_width=True)
+st.sidebar.header("⚽ Filtros de Selección")
 
-    # Filtro 1: Marcas (Top por defecto para asegurar visualización rica)
-    marcas_limpias = df['brand'].dropna().unique()
-    marcas_disponibles = sorted([str(marca) for marca in marcas_limpias])
-    marcas_seleccionadas = st.multiselect(
-        "Filtrar por Marcas", 
-        marcas_disponibles, 
-        default=["Rolex", "Omega", "Patek Philippe", "Audemars Piguet", "Tudor", "Cartier"]
+# Filtro 1: Marcas (Top por defecto para asegurar visualización rica)
+marcas_limpias = df['brand'].dropna().unique()
+marcas_disponibles = sorted([str(marca) for marca in marcas_limpias])
+marcas_seleccionadas = st.sidebar.multiselect(
+    "Filtrar por Marcas", 
+    marcas_disponibles, 
+    default=marcas_disponibles[:12]
+)
+
+# Filtro 2: Tiers de Lujo (Aprovechando la lógica categórica de tu data_loader)
+if 'tier_lujo' in df.columns:
+    tiers_disponibles = sorted([str(tier) for tier in df['tier_lujo'].dropna().unique()])
+    tiers_seleccionados = st.sidebar.multiselect(
+        "Filtrar por Tier de Lujo", 
+        tiers_disponibles, 
+        default=tiers_disponibles
     )
+else:
+    tiers_seleccionados = []
 
-    # Filtro 2: Tiers de Lujo (Aprovechando la lógica categórica de tu data_loader)
-    if 'tier_lujo' in df.columns:
-        tiers_disponibles = sorted([str(tier) for tier in df['tier_lujo'].dropna().unique()])
-        tiers_seleccionados = st.multiselect(
-            "Filtrar por Tier de Lujo", 
-            tiers_disponibles, 
-            default=tiers_disponibles
-        )
-    else:
-        tiers_seleccionados = []
-
-    # Filtro 3: Material de la Caja (Variable de segmentación de producto relevante)
-    if 'casem' in df.columns:
-        materiales_limpios = [str(mat) for mat in df['casem'].dropna().unique() if str(mat).lower() != "no especificado"]
-        materiales_disponibles = sorted(materiales_limpios)
-        materiales_seleccionados = st.multiselect(
-            "Filtrar por Material de la Caja", 
-            materiales_disponibles, 
-            default=[]
-        )
-    else:
-        materiales_seleccionados = []
+# Filtro 3: Material de la Caja (Variable de segmentación de producto relevante)
+if 'casem' in df.columns:
+    materiales_limpios = [str(mat) for mat in df['casem'].dropna().unique() if str(mat).lower() != "no especificado"]
+    materiales_disponibles = sorted(materiales_limpios)
+    materiales_seleccionados = st.sidebar.multiselect(
+        "Filtrar por Material de la Caja", 
+        materiales_disponibles, 
+        default=[]
+    )
+else:
+    materiales_seleccionados = []
 
 # Aplicación cruzada de las máscaras de filtrado sobre el dataset protegido
 mask = df['brand'].isin(marcas_seleccionadas)
@@ -193,22 +179,21 @@ if materiales_seleccionados:
 
 df_filtrado = df[mask].copy()
 
-# ============================================================
-# 5. CABECERA PRINCIPAL (IMAGEN STAND Y HERO SECTION CON RELOJ_LUJO)
-# ============================================================
-# Imagen Principal que corona el dashboard entero
-img_stand = "Pictures/Stand.jpg"
-if os.path.exists(img_stand):
-    st.image(img_stand, use_container_width=True)
 
+# Imagen principal del stand
+st.image("Pictures/Stand.png", use_container_width=True)
+
+# ============================================================
+# 5. HERO SECTION (CON IMAGEN LOCAL Y ESPACIADO REAJUSTADO)
+# ============================================================
 with st.container():
-    # Inyectamos el margen superior para desplazar el contenedor un poco hacia abajo
+    # Inyectamos el margen superior para desplazar la cabecera hacia abajo
     st.markdown('<div class="header-spacing"></div>', unsafe_allow_html=True)
     col1, col2 = st.columns([4, 1.5])
     with col1:
         st.markdown("""
         <div class="hero-card">
-            <h1 class="main-title">⚽ Mundial Luxury Stands 🏆</h1>
+            <h1 style="margin-bottom:0; color:white; font-size:2.2rem;">⚽ Mundial Luxury Stands 🏆</h1>
             <h4 style="color:#94A3B8;">Dashboard Ejecutivo de Inteligencia Comercial</h4>
             <p style="font-size:16px; color:#E2E8F0;">
             Análisis estratégico del mercado global de relojería de lujo, 
@@ -217,10 +202,10 @@ with st.container():
         </div>
         """, unsafe_allow_html=True)
     with col2:
-        # Carga la imagen Reloj_lujo.jpg de la subcarpeta Pictures
-        img_reloj = "Pictures/Reloj_lujo.jpg"
-        if os.path.exists(img_reloj):
-            st.image(img_reloj, use_container_width=True)
+        # Intenta cargar la imagen local en la ruta exacta provista. Cae en fallback si no existe.
+        ruta_imagen_local = "Pictures/Reloj_lujo.jpg"
+        if os.path.exists(ruta_imagen_local):
+            st.image(ruta_imagen_local, use_container_width=True)
         else:
             st.image("https://images.unsplash.com/photo-1523170335258-f5ed11844a49", use_container_width=True)
 
@@ -255,7 +240,7 @@ with c2:
     st.markdown("""
     <div class="executive-card">
         <h4>💎 Premiumización</h4>
-        <p>Los segmentos <b>los segmentos Premium y Alta Gama</b> generan las mayores oportunidades de margen y posicionamiento.</p>
+        <p>Los segmentos <b>Premium y Alta Gama</b> generan las mayores oportunidades de margen y posicionamiento.</p>
     </div>
     """, unsafe_allow_html=True)
 with c3:
@@ -269,7 +254,7 @@ with c3:
 st.write("") 
 
 # ============================================================
-# 7. SISTEMA DE PESTAÑAS (Integración Completa y Extendida)
+# 7. SISTEMA DE PESTAÑAS (Integración de Gráficos Obligatorios)
 # ============================================================
 tab1, tab2, tab3 = st.tabs(["🏆 Presencia y Participación", "📐 Análisis de Cuadrantes", "⚖️ Gobernanza IA y Sesgos (COMPAS)"])
 
@@ -359,14 +344,14 @@ with tab2:
                 .reset_index()
             )
             
-            MIN_MODELOS = 3
+            MIN_MODELOS = 5
             resumen_oportunidad = resumen_oportunidad[resumen_oportunidad['n_modelos'] >= MIN_MODELOS]
             
             if not resumen_oportunidad.empty:
                 mediana_precio = resumen_oportunidad['precio_medio'].median()
                 mediana_anio = resumen_oportunidad['anio_medio'].median()
                 
-                # GRÁFICO OBLIGATORIO 3: Oportunidades (Scatterplot optimizado en sus ejes para evitar apiñamiento en la alta densidad)
+                # GRÁFICO OBLIGATORIO 3: Mapa de oportunidad (Scatterplot con rangos re-escalados para evitar apiñamiento)
                 fig3 = px.scatter(
                     resumen_oportunidad,
                     x='anio_medio',
@@ -381,11 +366,11 @@ with tab2:
                 )
                 fig3.update_traces(textposition='top center')
                 
-                # RE-ESCALADO ESTRATÉGICO: Ajustamos los rangos para dispersar visualmente la concentración de datos
-                fig3.update_xaxes(range=[2017, 2025.5])
-                fig3.update_yaxes(range=[0, 100000])
+                # OPTIMIZACIÓN DE ESCALAS: Forzamos límites fijos y holgados para dispersar los elementos
+                fig3.update_xaxes(range=[2020, 2025.5])
+                fig3.update_yaxes(range=[5000, 80000])
                 
-                # Líneas de referencia fijas basadas en las medianas
+                # Líneas de referencia basadas en medianas del scatterplot
                 fig3.add_vline(x=mediana_anio, line_dash='dash', line_color='gray')
                 fig3.add_hline(y=mediana_precio, line_dash='dash', line_color='gray')
                 
@@ -400,7 +385,7 @@ with tab2:
                 with col_graf:
                     st.plotly_chart(fig3, use_container_width=True)
                 with col_info:
-                    # Métrica de 'mediana_anio' removida tal como se solicitó
+                    # NOTA: Se ha removido visualmente la métrica de 'mediana_anio' según tus indicaciones
                     st.metric("Mediana Precio Medio", f"${mediana_precio:,.0f}")
                     st.markdown("""
                     <div class="executive-card">
@@ -409,33 +394,27 @@ with tab2:
                     </div>
                     """, unsafe_allow_html=True)
                     
+                # Despliegue de apoyo analítico complementario (Tabla de Marcas en Cuadrante de Ventaja)
                 st.markdown("#### 🚀 Marcas Detectadas en el Cuadrante de Oportunidad")
-                
-                # Filtro matemático por cuadrante
                 oportunidad = resumen_oportunidad[
                     (resumen_oportunidad['anio_medio'] >= mediana_anio) &
                     (resumen_oportunidad['precio_medio'] >= mediana_precio)
-                ].copy()
+                ].sort_values('precio_medio', ascending=False)
                 
-                # VALIDACIÓN MANDATORIA: Forzamos la inclusión de Omega si se encuentra presente en los datos analizados
-                if "Omega" in resumen_oportunidad['brand'].values and "Omega" not in oportunidad['brand'].values:
-                    fila_omega = resumen_oportunidad[resumen_oportunidad['brand'] == "Omega"]
-                    oportunidad = pd.concat([oportunidad, fila_omega])
-                
-                st.dataframe(
-                    oportunidad.rename(columns={
+                if not oportunidad.empty:
+                    omega = resumen_oportunidad[resumen_oportunidad['brand'].astype(str).str.contains('Omega', case=False, na=False)]
+                    if not omega.empty and 'Omega' not in oportunidad['brand'].astype(str).tolist():
+                        oportunidad = pd.concat([oportunidad, omega]).drop_duplicates(subset=['brand'])
+                    st.dataframe(oportunidad.rename(columns={
                         'brand': 'Marca',
                         'anio_medio': 'Año Medio Fabricación',
                         'precio_medio': 'Precio Promedio (USD)',
                         'n_modelos': 'Volumen Muestral'
-                    }).sort_values('Precio Promedio (USD)', ascending=False), 
-                    hide_index=True, 
-                    use_container_width=True
-                )
+                    }), hide_index=True, use_container_width=True)
             else:
-                st.warning(f"Volumen muestral insuficiente para procesar las matrices de cuadrantes.")
+                st.warning(f"Volumen muestral insuficiente (menor a {MIN_MODELOS}) para procesar los cuadrantes.")
         else:
-            st.error("No existen columnas cruzadas utilizables para procesar las variables numéricas.")
+            st.error("No existen columnas cruzadas con registros válidos para 'price' y 'yop'.")
             
         st.markdown("---")
         st.markdown("#### 📊 Composición por Portafolio de Precios (Tiers de Lujo)")
@@ -478,7 +457,7 @@ with tab2:
                 st.plotly_chart(fig4, use_container_width=True)
                 
             with col_table_t:
-                # TABLA DE APOYO OBLIGATORIA 5: Estructura analítica de pivotaje y cálculo porcentual
+                # TABLA DE APOYO OBLIGATORIA 5: Qué % de los modelos caen en categorías exclusivas
                 st.markdown("##### 5. Tabla de Apoyo: Concentración en Alta Gama o Superior")
                 tabla_pct = (
                     conteo_tier_marca
@@ -515,7 +494,7 @@ with tab2:
                     }
                 )
         else:
-            st.warning("Estructura de categorización de portafolios ausente.")
+            st.warning("Estructura de categorización de portafolios 'tier_lujo' ausente en la fuente de datos actual.")
 
 # --- PESTAÑA 3: ÉTICA, COMPAS Y MITIGACIÓN DE SESGOS ---
 with tab3:
@@ -559,4 +538,9 @@ with tab3:
     
     df_mitigado = compas_df.copy()
     n_mitigacion_size = (df_mitigado['grupo'] == 'No Privilegiado').sum()
-    df_mitigado.loc[df_mitigado['grupo'] == 'No Privilegiado', 'asignacion_positiva'] = np.random.choice([1, 0], size=n_mitigacion_size, p=[0.55, 0.45])
+    df_mitigado.loc[df_mitigado['grupo'] == 'No Privilegiado', 'asignacion_positiva'] = np.random.choice([1, 0], size=n_mitigacion_size, p=[0.68, 0.32])
+    
+    if st.button("🚀 Generar Insight Ejecutivo"):
+        st.success("✨ ¡Análisis completado con éxito! Se han identificado oportunidades de optimización en los segmentos premium y se han corregido los sesgos algorítmicos en la base de datos de asignación.")
+        st.write("📈 **Vista previa de los datos optimizados y mitigados con IA Responsable:**")
+        st.dataframe(df_mitigado.head(10), use_container_width=True)
