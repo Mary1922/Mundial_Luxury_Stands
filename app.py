@@ -145,7 +145,7 @@ marcas_seleccionadas = st.sidebar.multiselect(
     default=marcas_disponibles[:12]
 )
 
-# Filtro 2: Tiers de Lujo (Aprovechando la lógica categórica de tu data_loader)
+# Filtro 2: Tiers de Lujo (Aprovechando la lógica categórica de data_loader)
 if 'tier_lujo' in df.columns:
     tiers_disponibles = sorted([str(tier) for tier in df['tier_lujo'].dropna().unique()])
     tiers_seleccionados = st.sidebar.multiselect(
@@ -212,9 +212,9 @@ with st.container():
 st.write("") 
 
 # ============================================================
-# 6. SECCIÓN KPIs GLOBALES & TARJETAS (Executive Summary)
+# 6. SECCIÓN KPIs GLOBALES & TARJETAS (Resumen Ejecutivo)
 # ============================================================
-st.markdown("## 📊 Executive Summary")
+st.markdown("## 📊 Resumen Ejecutivo")
 
 if not df_filtrado.empty:
     k1, k2, k3 = st.columns(3)
@@ -256,7 +256,7 @@ st.write("")
 # ============================================================
 # 7. SISTEMA DE PESTAÑAS (Integración de Gráficos Obligatorios)
 # ============================================================
-tab1, tab2, tab3 = st.tabs(["🏆 Presencia y Participación", "📐 Análisis de Cuadrantes", "⚖️ Gobernanza IA y Sesgos (COMPAS)"])
+tab1, tab2, tab3, tab4 = st.tabs(["🏆 Presencia y Participación", "📐 Análisis de Cuadrantes", "⚖️ Gobernanza IA y Sesgos (COMPAS)", "🎁 Experiencia Premium"])
 
 # --- PESTAÑA 1: PRESENCIA EN EL MERCADO Y DISTRIBUCIÓN ---
 with tab1:
@@ -365,7 +365,7 @@ with tab2:
                     size='n_modelos',
                     color='brand',
                     text='brand',
-                    title='¿Qué marcas combinan catálogo reciente y precio premium? (tamaño = nº de modelos nuevos disponibles)',
+                    title='¿Qué marcas combinan catálogo reciente y precio premium?',
                     labels={'anio_medio': 'Año medio de fabricación de los modelos', 'precio_medio': 'Precio medio (USD)', 'brand': 'Marca'},
                     size_max=40,
                     height=600
@@ -391,7 +391,7 @@ with tab2:
                 with col_graf:
                     st.plotly_chart(fig3, use_container_width=True)
                 with col_info:
-                    # NOTA: Se ha removido visualmente la métrica de 'mediana_anio' según tus indicaciones
+                    
                     st.metric("Mediana Precio Medio", f"${mediana_precio:,.0f}")
                     st.markdown("""
                     <div class="executive-card">
@@ -426,7 +426,7 @@ with tab2:
         st.markdown("---")
         st.markdown("#### 📊 Composición por Portafolio de Precios (Tiers de Lujo)")
         
-        # GRÁFICO OBLIGATORIO 4: ¿Qué rango de precios ofrece cada marca? (nº de modelos nuevos por Tier de Lujo)
+        # GRÁFICO OBLIGATORIO 4: ¿Qué rango de precios ofrece cada marca? (nº de modelos por Tier de Lujo)
         marcas_principales = df_filtrado['brand'].value_counts().head(10).index
         df_tiers = df_filtrado[df_filtrado['brand'].isin(marcas_principales)].copy()
         
@@ -464,8 +464,8 @@ with tab2:
                 st.plotly_chart(fig4, use_container_width=True)
                 
             with col_table_t:
-                # TABLA DE APOYO OBLIGATORIA 5: Qué % de los modelos caen en categorías exclusivas
-                st.markdown("##### 5. Tabla de Apoyo: Concentración en Alta Gama o Superior")
+                # TABLA DE APOYO 5: Qué % de los modelos caen en categorías exclusivas
+                st.markdown("##### Tabla de Apoyo: Concentración en Alta Gama o Superior")
                 tabla_pct = (
                     conteo_tier_marca
                     .pivot(index='brand', columns='tier_lujo', values='n_modelos')
@@ -500,32 +500,7 @@ with tab2:
                         )
                     }
                 )
-                # ============================================================
-                # EXPERIENCIA PREMIUM FINAL
-                # ============================================================
-
-                st.markdown("---")
-
-                st.markdown("""
-                <div class="executive-card">
-                    <h4>🎁 Experiencia Premium para el Cliente</h4>
-                    <p>
-                    Como elemento diferenciador de la propuesta de valor,
-                    los clientes seleccionados recibirán un grabado exclusivo
-                    personalizado en su reloj de lujo.
-                    </p>
-                </div>
-                """, unsafe_allow_html=True)
-
-                if st.button("✨ Detalle Premium"):
-                    st.image(
-                        "Pictures/grabado.png",
-                        caption="Grabado personalizado incluido como detalle exclusivo",
-                        use_container_width=True
-                )
-        else:
-            st.warning("Estructura de categorización de portafolios 'tier_lujo' ausente en la fuente de datos actual.")
-
+                
 # --- PESTAÑA 3: ÉTICA, COMPAS Y MITIGACIÓN DE SESGOS ---
 with tab3:
     st.markdown("### ⚖️ Auditoría de Algoritmos y Mitigación de Sesgo Ético")
@@ -574,3 +549,36 @@ with tab3:
         st.success("✨ ¡Análisis completado con éxito! Se han identificado oportunidades de optimización en los segmentos premium y se han corregido los sesgos algorítmicos en la base de datos de asignación.")
         st.write("📈 **Vista previa de los datos optimizados y mitigados con IA Responsable:**")
         st.dataframe(df_mitigado.head(10), use_container_width=True)
+
+# ============================================================
+# PESTAÑA 4: EXPERIENCIA PREMIUM
+# ============================================================
+
+with tab4:
+
+    st.markdown("## 🎁 Experiencia Premium")
+
+    st.markdown("""
+    <div class="hero-card">
+        <h2 style="color:white;">Grabado Exclusivo Personalizado</h2>
+        <p style="color:#E2E8F0; font-size:16px;">
+        Como elemento diferenciador de la experiencia de compra,
+        los clientes seleccionados recibirán un grabado exclusivo
+        personalizado incluido con su reloj de lujo.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.write("")
+
+    if st.button("✨ Mostrar Detalle Premium"):
+
+        st.image(
+            "Pictures/grabado.png",
+            caption="Grabado personalizado incluido como detalle exclusivo",
+            use_container_width=True
+        )
+
+        st.success(
+            "El grabado premium se entrega sin coste adicional como parte de la experiencia de lujo."
+        )
