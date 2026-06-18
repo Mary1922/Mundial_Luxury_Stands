@@ -197,14 +197,14 @@ div[role="option"]:hover {
 .stProgress > div > div > div > div {
     background-color: #D4AF37 !important;
 }
-            
+                   
 </style>
 """, unsafe_allow_html=True)
 
 # ============================================================
 # 3. CARGA DE DATOS SEPARADA (Dataset Comercial e IA)
 # ============================================================
-df = cargar_y_limpiar_datos("Watches.csv")
+df = cargar_y_limpiar_datos("Watches_limpio.csv")
 
 # Aseguramos conversiones numéricas para evitar fallos en cálculos matemáticos de Plotly/Pandas
 if 'price' in df.columns:
@@ -354,7 +354,7 @@ st.write("")
 # ============================================================
 # 7. SISTEMA DE PESTAÑAS (Integración de Gráficos Obligatorios)
 # ============================================================
-tab1, tab2, tab3, tab4 = st.tabs(["🏆 Presencia y Participación", "📐 Análisis de Cuadrantes", "⚖️ Gobernanza IA y Sesgos (COMPAS)", "🎁 Experiencia Premium"])
+tab1, tab2, tab3, tab4 = st.tabs(["🏆 Presencia y Participación", "📐 Análisis de Cuadrantes", "⚖️ Sesgos y Mitigación", "🎁 Experiencia Premium"])
 
 # --- PESTAÑA 1: PRESENCIA EN EL MERCADO Y DISTRIBUCIÓN ---
 with tab1:
@@ -457,8 +457,9 @@ with tab2:
             resumen_oportunidad = resumen_oportunidad[resumen_oportunidad['n_modelos'] >= MIN_MODELOS]
             
             if not resumen_oportunidad.empty:
-                mediana_precio = resumen_oportunidad['precio_medio'].median()
+                precio_oportunidad = 9000
                 mediana_anio = resumen_oportunidad['anio_medio'].median()
+
                 
                 # GRÁFICO OBLIGATORIO 3: Mapa de oportunidad (Scatterplot con rangos re-escalados para evitar apiñamiento)
                 fig3 = px.scatter(
@@ -480,12 +481,14 @@ with tab2:
                 
                 fig3.update_yaxes(
                     type="log",
+                    range=[3.8, 5.1],   # 10^3.8≈6300 hasta 10^5.1≈126000
                     title="Precio medio (USD)"
-            )   
+                )
+                
                 
                 # Líneas de referencia basadas en medianas del scatterplot
                 fig3.add_vline(x=mediana_anio, line_dash='dash', line_color='gray')
-                fig3.add_hline(y=mediana_precio, line_dash='dash', line_color='gray')
+                fig3.add_hline(y=precio_oportunidad, line_dash='dash', line_color='#D4AF37', line_width=2)
                 
                 fig3.update_layout(
                     template='plotly_dark',
@@ -493,13 +496,24 @@ with tab2:
                     plot_bgcolor='rgba(0,0,0,0)',
                     showlegend=False
                 )
+                fig3.add_annotation(
+                    x=2024.2,
+                    y=9000,
+                    text="Umbral Premium",
+                    showarrow=False,
+                    font=dict(
+                        size=12,
+                        color="#D4AF37"
+                    ),
+                    bgcolor="rgba(0,0,0,0.65)"
+                )
                 
                 col_graf, col_info = st.columns([3, 1])
                 with col_graf:
                     st.plotly_chart(fig3, use_container_width=True)
                 with col_info:
                     
-                    st.metric("Mediana Precio Medio", f"${mediana_precio:,.0f}")
+                    st.metric("Umbral Precio Premium", "$9,000")
                     st.markdown("""
                     <div class="executive-card">
                         <b>Cuadrante Superior Derecho (Oportunidad):</b><br>
@@ -511,7 +525,7 @@ with tab2:
                 st.markdown("### 🚀 Marcas Detectadas en el Cuadrante de Oportunidad")
                 oportunidad = resumen_oportunidad[
                     (resumen_oportunidad['anio_medio'] >= mediana_anio) &
-                    (resumen_oportunidad['precio_medio'] >= mediana_precio)
+                    (resumen_oportunidad['precio_medio'] >= precio_oportunidad)
                 ].sort_values('precio_medio', ascending=False)
                 
                 if not oportunidad.empty:
@@ -619,54 +633,57 @@ with tab2:
                     }
                 )
                 
-# --- PESTAÑA 3: ÉTICA, COMPAS Y MITIGACIÓN DE SESGOS ---
+# --- PESTAÑA 3: SESGOS Y MITIGACIÓN ---
 with tab3:
-    st.markdown("### ⚖️ Auditoría de Algoritmos y Mitigación de Sesgo Ético")
-    
-    st.markdown("""
-    En esta sección evaluamos el comportamiento del algoritmo de asignación bajo los principios de la **IA Responsable**. 
-    Analizamos si el modelo hereda sesgos históricos utilizando las métricas estándar del algoritmo de riesgo **COMPAS**.
-    """)
-    
-    df_priv = compas_df[compas_df['grupo'] == 'Privilegiado']
-    tasa_privilegiados = df_priv['asignacion_positiva'].mean()
-    
-    df_no_priv = compas_df[compas_df['grupo'] == 'No Privilegiado']
-    tasa_no_privilegiados = df_no_priv['asignacion_positiva'].mean()
-    
-    disparate_impact = tasa_privilegiados / tasa_no_privilegiados if tasa_no_privilegiados != 0 else 0
-    
-    col_m1, col_m2, col_m3 = st.columns(3)
-    with col_m1:
-        st.metric(label="Tasa Asignación Grupo Privilegiado", value=f"{tasa_privilegiados:.2%}")
-    with col_m2:
-        st.metric(label="Tasa Asignación Grupo No Privilegiado", value=f"{tasa_no_privilegiados:.2%}")
-    with col_m3:
-        if 0.8 <= (1 / disparate_impact if disparate_impact != 0 else 0) <= 1.25:
-            estado_sesgo = "✅ Conforme (Sin sesgo significativo)"
-        else:
-            estado_sesgo = "🚨 Sesgo Detectado (Fuera de rango ético)"
-        st.metric(label="Ratio de Impacto Dispar", value=f"{disparate_impact:.2f}", delta=estado_sesgo)
+    st.markdown("### ⚖️ Sesgos y Mitigación")
 
+    st.info("""
+    Para garantizar una toma de decisiones responsable, es crítico reconocer las limitaciones 
+    metodológicas del dataset actual. A continuación, se detallan los sesgos identificados y las 
+    medidas de mitigación propuestas.
+    """)
+
+    # Grid de sesgos
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        st.markdown("""
+        <div class="bias-card">
+            <div class="bias-header"><div class="bias-title-group"><span class="bias-icon">🌎</span><p class="bias-title">Sesgo Geográfico</p></div></div>
+            <p><b>Impacto:</b> Datos concentrados en EE.UU./Europa. México y Canadá subrepresentados.</p>
+            <p><b>Riesgo:</b> Error en la estrategia de marketing local por extrapolación indebida.</p>
+            <div class="bias-block mitigacion"><div class="bias-block-label">Mitigación</div><p>Incluir datasets locales y ajustar peso de predicción por región.</p></div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with col2:
+        st.markdown("""
+        <div class="bias-card">
+            <div class="bias-header"><div class="bias-title-group"><span class="bias-icon">🏷️</span><p class="bias-title">Precio Reventa vs PVP</p></div></div>
+            <p><b>Impacto:</b> Los valores reflejan mercado secundario, no precios de catálogo oficial.</p>
+            <p><b>Riesgo:</b> Distorsión en la estimación de costes de activación.</p>
+            <div class="bias-block mitigacion"><div class="bias-block-label">Mitigación</div><p>Calibrar precios usando un factor de corrección de mercado mayorista.</p></div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with col3:
+        st.markdown("""
+        <div class="bias-card">
+            <div class="bias-header"><div class="bias-title-group"><span class="bias-icon">🔍</span><p class="bias-title">Filtro "Solo Nuevos"</p></div></div>
+            <p><b>Impacto:</b> Sesgo hacia marcas con alta distribución vía revendedores terceros.</p>
+            <p><b>Riesgo:</b> Infrarrepresentación de marcas con venta boutique exclusiva.</p>
+            <div class="bias-block mitigacion"><div class="bias-block-label">Mitigación</div><p>Ampliar alcance a datos de mercado primario (boutiques).</p></div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    # Nota final de Gobernanza
     st.markdown("""
     <div class="governance-card">
-        <h4>📋 Nota de Gobernanza de Datos</h4>
-        Para cumplir con las normativas europeas y marcos de ética corporativos, el Ratio de Impacto Dispar 
-        debe mantenerse cercano a <b>1.0</b>. Valores inferiores a 0.80 o superiores a 1.25 implican un impacto discriminatorio 
-        indirecto sobre los grupos protegidos.
+        <h4>📋 Compromiso con la IA Responsable</h4>
+        Nuestra metodología de análisis audita estos riesgos para evitar la replicación de sesgos históricos. 
+        <b>Cada decisión estratégica basada en este dashboard debe ser supervisada con estos puntos de control.</b>
     </div>
     """, unsafe_allow_html=True)
-    
-    st.markdown("#### 🛠️ Aplicación de Técnicas de Mitigación de Sesgos")
-    
-    df_mitigado = compas_df.copy()
-    n_mitigacion_size = (df_mitigado['grupo'] == 'No Privilegiado').sum()
-    df_mitigado.loc[df_mitigado['grupo'] == 'No Privilegiado', 'asignacion_positiva'] = np.random.choice([1, 0], size=n_mitigacion_size, p=[0.68, 0.32])
-    
-    if st.button("🚀 Generar Insight Ejecutivo"):
-        st.success("✨ ¡Análisis completado con éxito! Se han identificado oportunidades de optimización en los segmentos premium y se han corregido los sesgos algorítmicos en la base de datos de asignación.")
-        st.write("📈 **Vista previa de los datos optimizados y mitigados con IA Responsable:**")
-        st.dataframe(df_mitigado.head(10), use_container_width=True)
 
 # ============================================================
 # PESTAÑA 4: EXPERIENCIA PREMIUM

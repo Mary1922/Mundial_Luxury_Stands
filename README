@@ -2,20 +2,55 @@
 
 Este proyecto despliega una aplicación web analítica interactiva desarrollada con **Streamlit** y **Plotly** orientada a segmentar el mercado objetivo para una campaña de venta de relojes de lujo nuevos, mitigando activamente sesgos de datos e inconsistencias estadísticas.
 
-## 🧠 Mitigación de Sesgos e Integridad de Datos (Data Ethics)
-Durante la fase de exploración del dataset (`Watches.csv`), se detectó que la variable de condición presentaba un **74.73% de registros nulos (NaN)**. 
+📝 Descripción del Proyecto: ⚽ Mundial Luxury Stands es una solución integral de Inteligencia de Negocios (BI) diseñada para el sector de relojería de lujo. El dashboard actúa como un centro de mando ejecutivo que permite la toma de decisiones basada en datos, facilitando el análisis de mercado, la segmentación de productos y la evaluación de ética algorítmica.El sistema procesa datasets complejos para extraer valor operativo, permitiendo a los usuarios filtrar por marca, material de caja y tier de lujo, mientras visualizan la salud comercial de sus catálogos en tiempo real.
 
-Bajo criterios rigurosos de Ciencia de Datos y Gobierno del Dato, se determinó que asumir que dichos nulos equivalían a piezas nuevas constituía un **Sesgo de Selección crítico**. El modelo fue diseñado aislando de forma estricta las categorías comprobadas `New` y `Unworn`, logrando un universo limpio y robusto de **23,146 registros listos para la optimización comercial**.
+🚀 Funcionalidades Clave
 
-## 🛠️ Arquitectura Modular del Código
-El software se ha estructurado siguiendo las mejores prácticas de ingeniería de software para garantizar la mantenibilidad:
-* `data_loader.py`: Contiene los algoritmos de carga, expresiones regulares para la normalización de variables numéricas complejas (limpieza de cadenas de texto y conversión a tipos `Float64` y `Int64` de Pandas) y el filtrado del sesgo.
-* `app.py`: Gestiona la interfaz gráfica, los componentes de filtrado dinámico cruzado y la renderización de las visualizaciones de distribución a pantalla completa.
+1. Inteligencia Comercial y Análisis de Mercado: 
+Resumen Ejecutivo: KPIs globales de mercado, incluyendo conteo de marcas, volumen de anuncios y precio mediano de mercado.  
+Presencia y Participación: Análisis visual de la cuota de mercado mediante gráficos de barras interactivos que identifican las marcas dominantes.  
+Dispersión de Precios: Gráficos de cajas (boxplots) con escala logarítmica que permiten comparar la estrategia de precios entre diferentes marcas de lujo de forma equitativa.  
+Matriz de Oportunidades: Un scatterplot estratégico que cruza el "Año Medio de Fabricación" con el "Precio Medio", permitiendo identificar marcas en el cuadrante de alta oportunidad.  
 
-## 🚀 Requisitos e Instalación Local
-Desarrollado en un entorno **Ubuntu (WSL)**. Para replicar la ejecución local:
+2. Segmentación Avanzada (Tiers de Lujo)El motor de datos clasifica automáticamente el catálogo en cuatro niveles jerárquicos definidos metodológicamente:Entrada: Segmento de acceso (< $5,000).Premium: Segmento intermedio ($5,000 - $15,000).Alta Gama: Segmento exclusivo ($15,000 - $50,000).Ultra-Lujo: Segmento élite (> $50,000).
 
-1. Clonar el repositorio:
-   ```bash
-   git clone 
-   cd relojes-lujo-dashboard
+3. Gobernanza de Datos y Ética Algorítmica
+
+Integración de 3 tipos de sesgos detectados y su mitigación
+
+🛠️ Pipeline Técnico (data_loader.py)
+
+El proyecto cuenta con un proceso de ETL (Extract, Transform, Load) optimizado para garantizar la calidad del dato:Limpieza de Precios: Expresiones regulares para limpiar cadenas de texto y convertir divisas a valores numéricos flotantes.Caché Inteligente: Uso de @st.cache_data para mejorar la velocidad de carga de la aplicación.  Estandarización: Conversión automática de condiciones de mercado (New/Unworn) y normalización de nombres de columnas para asegurar la integridad en las visualizaciones.
+
+📦 Instalación y ConfiguraciónRequisitos previos: Asegúrate de tener Python 3.10 o superior instalado.Clonar el repositorio: 
+git clone https://github.com/tu-usuario/mundial-luxury-stands.git
+cd mundial-luxury-stands
+
+Instalar dependencias:pip install -r requirements.txt
+Ejecutar el Dashboard:streamlit run app.py
+
+📁 Estructura de Directorios: 
+app.py: Core de la aplicación, manejo de UI, layouts con CSS premium y lógica de los gráficos.  data_loader.py: Script dedicado a la limpieza, transformación de datos y aplicación de reglas de negocio.
+requirements.txt: Listado de librerías esenciales (Streamlit, Pandas, NumPy, Plotly).
+Pictures/: Directorio que contiene los activos visuales (logo, imágenes de stands y detalles premium).  
+
+├── app.py              # Aplicación principal y lógica de visualización
+├── data_loader.py      # Pipeline de limpieza y transformación de datos
+├── requirements.txt    # Dependencias del proyecto
+├── Watches_limpio.csv  # Dataset (asegúrate de incluirlo en la ruta)
+└── Pictures/           # Recursos visuales y logos del dashboard
+
+⚖️ Compromiso con la Ética: Este proyecto integra principios de IA Responsable. La sección de gobernanza no solo mide el rendimiento comercial, sino que asegura que cualquier recomendación o asignación automática esté libre de sesgos injustos, cumpliendo con los estándares de transparencia necesarios en el sector de lujo.  Desarrollado con rigor técnico y elegancia analítica para la toma de decisiones premium. ⌚⚽
+
+🤝 Contribución
+Este proyecto es una herramienta de análisis comercial. Si deseas contribuir:
+
+Realiza un fork del proyecto.
+
+Crea una rama para tu funcionalidad (git checkout -b feature/nueva-mejora).
+
+Haz commit de tus cambios (git commit -m 'Añadida nueva funcionalidad').
+
+Abre un Pull Request.
+
+Desarrollado con pasión por los datos y el lujo. ⌚⚽
