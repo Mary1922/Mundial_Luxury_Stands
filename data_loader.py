@@ -19,8 +19,7 @@ def limpiar_precio(valor):
 @st.cache_data
 def cargar_y_limpiar_datos(path_csv="Watches_limpio.csv"):
 
-    # Carga inicial con optimización de memoria 
-    # Carga el CSV limpio
+    # Carga inicial con optimización de memoria
     df = pd.read_csv(path_csv, low_memory=False)
 
     # Si ya existe tier_lujo, no volver a crearla
@@ -38,17 +37,15 @@ def cargar_y_limpiar_datos(path_csv="Watches_limpio.csv"):
             else:
                 return "4. Ultra-Lujo"
 
-        df["tier_lujo"] = df["price"].apply(asignar_tier)
-        
         # 1. Limpieza de Año de producción (yop)
         if 'yop' in df.columns:
             df['yop'] = pd.to_numeric(df['yop'], errors='coerce').astype('Int64')
-        
+
         # 2. Limpieza de Precio original
         columna_precio_origen = 'price_raw' if 'price_raw' in df.columns else 'price'
         if columna_precio_origen in df.columns:
             df['price'] = df[columna_precio_origen].apply(limpiar_precio).astype('Float64')
-        
+
         # 3. Filtrado metodológico estricto: Solo mercado de relojes NUEVOS
         condiciones_nuevas = ['New', 'Unworn']
         if 'cond' in df.columns:
@@ -58,35 +55,34 @@ def cargar_y_limpiar_datos(path_csv="Watches_limpio.csv"):
             df_nuevos = df_nuevos.rename(columns={'condition': 'cond'})
         else:
             df_nuevos = df.copy()
-        
+
         df_nuevos = df_nuevos.loc[:, ~df_nuevos.columns.duplicated()]
-        
+
         # ============================================================
         # 🌟 RECREACIÓN AUTOMÁTICA Y ORDENACIÓN CATEGÓRICA DEL TIER
         # ============================================================
-        def asignar_tier(precio):
-            if pd.isna(precio):
-                return "1. Entrada"
-            if precio < 5000:
-                return "1. Entrada"
-            elif precio < 15000:
-                return "2. Premium"
-            elif precio < 50000:
-                return "3. Alta Gama"
-            else:
-                return "4. Ultra-Lujo"
-            
         df_nuevos['tier_lujo'] = df_nuevos['price'].apply(asignar_tier)
-        
+
         # IMPORTANTE: Forzamos a Pandas a entender el orden jerárquico para los gráficos
         orden_tiers = ['1. Entrada', '2. Premium', '3. Alta Gama', '4. Ultra-Lujo']
         df_nuevos['tier_lujo'] = pd.Categorical(df_nuevos['tier_lujo'], categories=orden_tiers, ordered=True)
-        
-        if 'case_material' in df_nuevos.columns and 'casem' not in df_nuevos.columns:
-            df_nuevos['casem'] = df_nuevos['case_material']
-        elif 'casem' not in df_nuevos.columns:
-            df_nuevos['casem'] = "No especificado"
-        
-        return df_nuevos
-    else:
-        return df
+
+        df = df_nuevos  # A partir de aquí seguimos trabajando sobre el dataset filtrado
+
+    # ============================================================
+    # 🔧 GARANTÍA INCONDICIONAL DE 'casem' (Material de la Caja)
+    # ------------------------------------------------------------
+    # OJO: este bloque se ejecuta SIEMPRE, tanto si el CSV ya traía
+    # 'tier_lujo' precalculado (rama else de arriba) como si no.
+    # Antes vivía DENTRO del `if "tier_lujo" not in df.columns:`,
+    # así que en cuanto el CSV empezó a incluir 'tier_lujo' de
+    # fábrica, esta normalización dejaba de ejecutarse, 'casem'
+    # nunca se creaba, y el filtro de Material de la Caja
+    # desaparecía de la barra lateral sin ningún error visible.
+    # ============================================================
+    if 'case_material' in df.columns and 'casem' not in df.columns:
+        df['casem'] = df['case_material']
+    elif 'casem' not in df.columns:
+        df['casem'] = "No especificado"
+
+    return df

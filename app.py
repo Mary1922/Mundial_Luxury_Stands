@@ -248,7 +248,7 @@ div[role="option"]:hover {
 # 3. CARGA DE DATOS SEPARADA (Dataset Comercial e IA)
 # ============================================================
 df = cargar_y_limpiar_datos("Watches_limpio.csv")
-
+   
 # Aseguramos conversiones numéricas para evitar fallos en cálculos matemáticos de Plotly/Pandas
 if 'price' in df.columns:
     df['price'] = pd.to_numeric(df['price'], errors='coerce')
