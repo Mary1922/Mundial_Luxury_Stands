@@ -77,7 +77,6 @@ html, body, [class*="css"], .stApp {
     color: #F5E6C8;
 }
 
-            
 .governance-card {
     background: linear-gradient(
         135deg,
@@ -96,7 +95,7 @@ html, body, [class*="css"], .stApp {
 .governance-card h4 {
     color: #F5E6C8;
 }
-                       
+                    
 div[data-testid="metric-container"] {
     background: #1E293B;
     border: 1px solid #334155;
@@ -136,16 +135,15 @@ button[data-baseweb="tab"] {
     box-shadow: 0 8px 24px rgba(212,175,55,.55);
 }
 
-/* 
-============================================================
+/* ============================================================
    ESTILO PREMIUM PARA FILTROS MULTISELECT
 ============================================================ */
 
-/* Chips seleccionados (Marcas, Tier de Lujo, Materiales, etc.) */
+/* Chips seleccionados */
 [data-baseweb="tag"] {
-    background-color: #8B5A2B !important;   /* Marrón café */
-    color: #F5E6C8 !important;              /* Crema elegante */
-    border: 1px solid #D4AF37 !important;   /* Dorado */
+    background-color: #8B5A2B !important;
+    color: #F5E6C8 !important;
+    border: 1px solid #D4AF37 !important;
     border-radius: 8px !important;
     font-weight: 600 !important;
     padding: 2px 6px !important;
@@ -193,11 +191,56 @@ div[role="option"]:hover {
     background-color: #C9A227 !important;
 }
 
-}
 .stProgress > div > div > div > div {
     background-color: #D4AF37 !important;
 }
-                   
+
+/* ============================================================
+   NUEVO CSS PREMIUM PARA TARJETAS DE SESGOS (BIAS CARDS)
+============================================================ */
+.bias-card {
+    background: #111827;
+    border: 1px solid #334155;
+    border-radius: 16px;
+    padding: 22px 26px;
+    margin-bottom: 20px;
+    border-top: 5px solid #94A3B8;
+    box-shadow: 0 4px 15px rgba(0,0,0,.25);
+}
+.bias-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.bias-title-group { display: flex; align-items: center; gap: 12px; }
+.bias-icon {
+    font-size: 1.6rem; background: #1E293B; border-radius: 12px;
+    width: 46px; height: 46px; display: flex; align-items: center; justify-content: center;
+}
+.bias-title { font-size: 1.05rem; font-weight: 700; color: #F8FAFC; margin: 0; }
+.severity-badge {
+    display: inline-block; padding: 4px 14px; border-radius: 999px;
+    font-size: 0.7rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; white-space: nowrap;
+}
+.severity-alto    { background: #7F1D1D; color: #FCA5A5; }
+.severity-medio   { background: #78350F; color: #FCD34D; }
+.bias-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 4px; }
+.bias-block { border-radius: 12px; padding: 14px 16px; }
+.bias-block.impacto    { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.25); }
+.bias-block.mitigacion { background: rgba(45,212,191,0.08); border: 1px solid rgba(45,212,191,0.25); }
+.bias-block-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 6px; }
+.bias-block.impacto .bias-block-label    { color: #FCA5A5; }
+.bias-block.mitigacion .bias-block-label { color: #5EEAD4; }
+.bias-block p { color: #E2E8F0; font-size: 0.88rem; line-height: 1.5; margin: 0; }
+.bias-block ul { color: #E2E8F0; font-size: 0.88rem; line-height: 1.55; margin: 0; padding-left: 18px; }
+.coverage-row { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+.coverage-chip {
+    background: #1E293B; border: 1px solid #334155; border-radius: 999px;
+    padding: 5px 12px; font-size: 0.78rem; color: #E2E8F0; display:flex; align-items:center; gap:6px;
+}
+.dot { width: 9px; height: 9px; border-radius: 50%; display:inline-block; }
+.dot-alta { background:#22C55E; }
+.dot-baja { background:#EF4444; }
+.stat-strip { display: flex; gap: 28px; margin: 14px 0 4px 0; }
+.stat-box .stat-value { font-size: 1.6rem; font-weight: 700; color: #D4AF37; }
+.stat-box .stat-label { font-size: 0.75rem; color: #94A3B8; text-transform: uppercase; letter-spacing:.04em; }
+
 </style>
 """, unsafe_allow_html=True)
 
@@ -643,42 +686,54 @@ with tab3:
     medidas de mitigación propuestas.
     """)
 
-    # Grid de sesgos
-    col1, col2, col3 = st.columns(3)
+    # Abrimos un contenedor contenedor general para evitar que se rompa el texto plano
+    st.markdown('<div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: space-between;">', unsafe_allow_html=True)
 
-    with col1:
-        st.markdown("""
-        <div class="bias-card">
-            <div class="bias-header"><div class="bias-title-group"><span class="bias-icon">🌎</span><p class="bias-title">Sesgo Geográfico</p></div></div>
-            <p><b>Impacto:</b> Datos concentrados en EE.UU./Europa. México y Canadá subrepresentados.</p>
-            <p><b>Riesgo:</b> Error en la estrategia de marketing local por extrapolación indebida.</p>
-            <div class="bias-block mitigacion"><div class="bias-block-label">Mitigación</div><p>Incluir datasets locales y ajustar peso de predicción por región.</p></div>
-        </div>
-        """, unsafe_allow_html=True)
-
-    with col2:
-        st.markdown("""
-        <div class="bias-card">
-            <div class="bias-header"><div class="bias-title-group"><span class="bias-icon">🏷️</span><p class="bias-title">Precio Reventa vs PVP</p></div></div>
-            <p><b>Impacto:</b> Los valores reflejan mercado secundario, no precios de catálogo oficial.</p>
-            <p><b>Riesgo:</b> Distorsión en la estimación de costes de activación.</p>
-            <div class="bias-block mitigacion"><div class="bias-block-label">Mitigación</div><p>Calibrar precios usando un factor de corrección de mercado mayorista.</p></div>
-        </div>
-        """, unsafe_allow_html=True)
-
-    with col3:
-        st.markdown("""
-        <div class="bias-card">
-            <div class="bias-header"><div class="bias-title-group"><span class="bias-icon">🔍</span><p class="bias-title">Filtro "Solo Nuevos"</p></div></div>
-            <p><b>Impacto:</b> Sesgo hacia marcas con alta distribución vía revendedores terceros.</p>
-            <p><b>Riesgo:</b> Infrarrepresentación de marcas con venta boutique exclusiva.</p>
-            <div class="bias-block mitigacion"><div class="bias-block-label">Mitigación</div><p>Ampliar alcance a datos de mercado primario (boutiques).</p></div>
-        </div>
-        """, unsafe_allow_html=True)
-
-    # Nota final de Gobernanza
+    # SESGO 1
     st.markdown("""
-    <div class="governance-card">
+    <div class="governance-card" style="flex: 1; min-width: 280px; margin-top: 10px;">
+        <h4 style="margin-top: 0;">🌎 Sesgo Geográfico</h4>
+        <p style="color: #F5E6C8; font-size: 0.9rem;"><b>Impacto:</b> Datos concentrados en EE.UU./Europa. México y Canadá subrepresentados.</p>
+        <p style="color: #F5E6C8; font-size: 0.9rem;"><b>Riesgo:</b> Error en la estrategia de marketing local por extrapolación indebida.</p>
+        <div style="background: rgba(255,255,255,0.08); border-left: 4px solid #D4AF37; padding: 12px; border-radius: 8px; margin-top: 15px;">
+            <b style="color: #D4AF37; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">Mitigación</b>
+            <p style="color: #F5E6C8; font-size: 0.85rem; margin: 4px 0 0 0;">Incluir datasets locales y ajustar peso de predicción por región.</p>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # SESGO 2
+    st.markdown("""
+    <div class="governance-card" style="flex: 1; min-width: 280px; margin-top: 10px;">
+        <h4 style="margin-top: 0;">🏷️ Precio Reventa vs PVP</h4>
+        <p style="color: #F5E6C8; font-size: 0.9rem;"><b>Impacto:</b> Los valores reflejan mercado secundario, no precios de catálogo oficial.</p>
+        <p style="color: #F5E6C8; font-size: 0.9rem;"><b>Riesgo:</b> Distorsión en la estimación de costes de activación.</p>
+        <div style="background: rgba(255,255,255,0.08); border-left: 4px solid #D4AF37; padding: 12px; border-radius: 8px; margin-top: 15px;">
+            <b style="color: #D4AF37; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">Mitigación</b>
+            <p style="color: #F5E6C8; font-size: 0.85rem; margin: 4px 0 0 0;">Calibrar precios usando un factor de corrección de mercado mayorista.</p>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # SESGO 3
+    st.markdown("""
+    <div class="governance-card" style="flex: 1; min-width: 280px; margin-top: 10px;">
+        <h4 style="margin-top: 0;">🔍 Filtro "Solo Nuevos"</h4>
+        <p style="color: #F5E6C8; font-size: 0.9rem;"><b>Impacto:</b> Sesgo hacia marcas con alta distribución vía revendedores terceros.</p>
+        <p style="color: #F5E6C8; font-size: 0.9rem;"><b>Riesgo:</b> Infrarrepresentación de marcas con venta boutique exclusiva.</p>
+        <div style="background: rgba(255,255,255,0.08); border-left: 4px solid #D4AF37; padding: 12px; border-radius: 8px; margin-top: 15px;">
+            <b style="color: #D4AF37; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">Mitigación</b>
+            <p style="color: #F5E6C8; font-size: 0.85rem; margin: 4px 0 0 0;">Ampliar alcance a datos de mercado primario (boutiques).</p>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Cerramos el contenedor flex
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    # Nota final de Gobernanza (La que ya te salía perfecta con tus colores favoritos)
+    st.markdown("""
+    <div class="governance-card" style="margin-top: 25px;">
         <h4>📋 Compromiso con la IA Responsable</h4>
         Nuestra metodología de análisis audita estos riesgos para evitar la replicación de sesgos históricos. 
         <b>Cada decisión estratégica basada en este dashboard debe ser supervisada con estos puntos de control.</b>
