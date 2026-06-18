@@ -39,40 +39,75 @@ html, body, [class*="css"], .stApp {
 }
 
 [data-testid="stSidebar"] {
-    background-color: #0F172A;
+    background: linear-gradient(
+        180deg,
+        #4A2C1D 0%,
+        #3B2416 50%,
+        #2C1810 100%
+    );
 }
 
 .hero-card {
-    background: linear-gradient(135deg, #111827, #1E293B);
+    background: linear-gradient(
+        135deg,
+        #4A2C1D 0%,
+        #3B2416 50%,
+        #2C1810 100%
+    );
     padding: 28px;
     border-radius: 20px;
-    border: 1px solid #334155;
+    border: 1px solid #D4AF37;
     box-shadow: 0 10px 25px rgba(0,0,0,.35);
 }
 
 .executive-card {
-    background: #111827;
+    background: linear-gradient(
+        135deg,
+        #4A2C1D 0%,
+        #3B2416 50%,
+        #2C1810 100%
+    );
     padding: 18px;
     border-radius: 16px;
-    border-left: 4px solid #D4AF37;
+    border: 1px solid #D4AF37;
     margin-bottom: 12px;
+    box-shadow: 0 6px 18px rgba(0,0,0,.25);
+}
+.executive-card h4 {
+    color: #F5E6C8;
 }
 
+            
 .governance-card {
-    background: #1E293B;
-    border-left: 5px solid #D4AF37;
+    background: linear-gradient(
+        135deg,
+        #4A2C1D 0%,
+        #3B2416 50%,
+        #2C1810 100%
+    );
+    border: 1px solid #D4AF37;
     padding: 24px;
     border-radius: 16px;
     margin-top: 15px;
     margin-bottom: 25px;
+    box-shadow: 0 6px 18px rgba(0,0,0,.25);
 }
 
+.governance-card h4 {
+    color: #F5E6C8;
+}
+                       
 div[data-testid="metric-container"] {
     background: #1E293B;
     border: 1px solid #334155;
     padding: 18px;
     border-radius: 16px;
     box-shadow: 0 4px 15px rgba(0,0,0,.25);
+}
+
+div[data-testid="stMetricLabel"] {
+    color: #F5E6C8 !important;
+    font-weight: 600 !important;
 }
 
 div[data-testid="stMetricValue"] {
@@ -100,6 +135,69 @@ button[data-baseweb="tab"] {
     transform: translateY(-2px);
     box-shadow: 0 8px 24px rgba(212,175,55,.55);
 }
+
+/* 
+============================================================
+   ESTILO PREMIUM PARA FILTROS MULTISELECT
+============================================================ */
+
+/* Chips seleccionados (Marcas, Tier de Lujo, Materiales, etc.) */
+[data-baseweb="tag"] {
+    background-color: #8B5A2B !important;   /* Marrón café */
+    color: #F5E6C8 !important;              /* Crema elegante */
+    border: 1px solid #D4AF37 !important;   /* Dorado */
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    padding: 2px 6px !important;
+}
+
+/* Texto dentro de cada chip */
+[data-baseweb="tag"] span {
+    color: #F5E6C8 !important;
+}
+
+/* Icono X para eliminar selección */
+[data-baseweb="tag"] svg {
+    fill: #F5E6C8 !important;
+}
+
+/* Cuadro desplegable de selección */
+[data-baseweb="select"] > div {
+    background-color: #2C1810 !important;
+    border: 1px solid #D4AF37 !important;
+}
+
+/* Texto dentro de los selectores */
+[data-baseweb="select"] {
+    color: #F5E6C8 !important;
+}
+
+/* Opciones del desplegable al abrir */
+div[role="listbox"] {
+    background-color: #2C1810 !important;
+    border: 1px solid #D4AF37 !important;
+}
+
+/* Opciones individuales */
+div[role="option"] {
+    color: #F5E6C8 !important;
+    background-color: #2C1810 !important;
+}
+
+/* Opción al pasar el ratón */
+div[role="option"]:hover {
+    background-color: #8B5A2B !important;
+}
+            
+.stProgress > div > div > div {
+    background-color: #C9A227 !important;
+}
+
+}
+.stProgress > div > div > div > div {
+    background-color: #D4AF37 !important;
+}
+            
 </style>
 """, unsafe_allow_html=True)
 
@@ -189,12 +287,12 @@ st.image("Pictures/Stand.png", use_container_width=True)
 with st.container():
     # Inyectamos el margen superior para desplazar la cabecera hacia abajo
     st.markdown('<div class="header-spacing"></div>', unsafe_allow_html=True)
-    col1, col2 = st.columns([4, 1.5])
+    col1, col2 = st.columns([4, 2.1])
     with col1:
         st.markdown("""
         <div class="hero-card">
-            <h1 style="margin-bottom:0; color:white; font-size:2.2rem;">⚽ Mundial Luxury Stands 🏆</h1>
-            <h4 style="color:#94A3B8;">Dashboard Ejecutivo de Inteligencia Comercial</h4>
+            <h1 style="margin-bottom:0; color:white; font-size:1.7rem;">⚽ Mundial Luxury Stands 🏆</h1>
+            <h4 style="color:#F5E6C8;">Dashboard Ejecutivo de Inteligencia Comercial</h4>
             <p style="font-size:16px; color:#E2E8F0;">
             Análisis estratégico del mercado global de relojería de lujo, 
             pricing premium y detección de oportunidades de crecimiento.
@@ -214,7 +312,7 @@ st.write("")
 # ============================================================
 # 6. SECCIÓN KPIs GLOBALES & TARJETAS (Resumen Ejecutivo)
 # ============================================================
-st.markdown("## 📊 Resumen Ejecutivo")
+st.markdown("### 📊 Resumen Ejecutivo")
 
 if not df_filtrado.empty:
     k1, k2, k3 = st.columns(3)
@@ -269,7 +367,7 @@ with tab1:
         total = df_filtrado['brand'].value_counts().sum()
         
         with col_lista:
-            st.markdown("#### Participación")
+            st.markdown("##### Participación")
             for _, row in conteo_marcas.head(6).iterrows():
                 pct = row["numero_anuncios"] / total
                 st.write(f"**{row['marca']}** — {pct:.1%}")
@@ -286,6 +384,11 @@ with tab1:
                 labels={'numero_anuncios': 'Número de anuncios activos', 'marca': ''},
                 text='numero_anuncios'
             )
+            fig2.update_traces(
+                marker_color="#C9A227",
+                marker_line_color="#8B6B00",
+                marker_line_width=1
+            )
             fig2.update_layout(
                 template="plotly_dark",
                 paper_bgcolor='rgba(0,0,0,0)',
@@ -296,7 +399,7 @@ with tab1:
             
         # GRÁFICO OBLIGATORIO 1: Distribución de precios por marca de relojería de lujo (escala logarítmica)
         st.markdown("---")
-        st.markdown("#### 📊 Análisis de Dispersión de Precios")
+        st.markdown("### 📊 Análisis de Dispersión de Precios")
         marcas_top12 = df_filtrado['brand'].value_counts().head(12).index
         df_top = df_filtrado[df_filtrado['brand'].isin(marcas_top12)]
         
@@ -374,7 +477,11 @@ with tab2:
                 
                 # OPTIMIZACIÓN DE ESCALAS: Forzamos límites fijos y holgados para dispersar los elementos
                 fig3.update_xaxes(range=[2020, 2025.5])
-                fig3.update_yaxes(range=[5000, 80000])
+                
+                fig3.update_yaxes(
+                    type="log",
+                    title="Precio medio (USD)"
+            )   
                 
                 # Líneas de referencia basadas en medianas del scatterplot
                 fig3.add_vline(x=mediana_anio, line_dash='dash', line_color='gray')
@@ -401,7 +508,7 @@ with tab2:
                     """, unsafe_allow_html=True)
                     
                 # Despliegue de apoyo analítico complementario (Tabla de Marcas en Cuadrante de Ventaja)
-                st.markdown("#### 🚀 Marcas Detectadas en el Cuadrante de Oportunidad")
+                st.markdown("### 🚀 Marcas Detectadas en el Cuadrante de Oportunidad")
                 oportunidad = resumen_oportunidad[
                     (resumen_oportunidad['anio_medio'] >= mediana_anio) &
                     (resumen_oportunidad['precio_medio'] >= mediana_precio)
@@ -424,9 +531,9 @@ with tab2:
             st.error("No existen columnas cruzadas con registros válidos para 'price' y 'yop'.")
             
         st.markdown("---")
-        st.markdown("#### 📊 Composición por Portafolio de Precios (Tiers de Lujo)")
+        st.markdown("### 📊 Composición por Portafolio de Precios (Tiers de Lujo)")
         
-        # GRÁFICO OBLIGATORIO 4: ¿Qué rango de precios ofrece cada marca? (nº de modelos por Tier de Lujo)
+        # GRÁFICO OBLIGATORIO 4: ¿Qué rango de precios ofrece cada marca? 
         marcas_principales = df_filtrado['brand'].value_counts().head(10).index
         df_tiers = df_filtrado[df_filtrado['brand'].isin(marcas_principales)].copy()
         
@@ -446,7 +553,7 @@ with tab2:
                 y='n_modelos',
                 color='tier_lujo',
                 category_orders={'tier_lujo': orden_tiers, 'brand': list(marcas_principales)},
-                title='¿Qué rango de precios ofrece cada marca? (nº de modelos nuevos por Tier de Lujo)',
+                title='¿Qué rango de precios ofrece cada marca?<br>(nº de modelos por Tier de Lujo)',
                 labels={'brand': '', 'n_modelos': 'Número de modelos', 'tier_lujo': 'Tier de Lujo'},
                 barmode='stack',
                 height=600
@@ -484,19 +591,30 @@ with tab2:
                 ).round(1)
                 
                 tabla_final = tabla_pct.sort_values('% Alta Gama o superior', ascending=False)[['total', '% Alta Gama o superior']].reset_index()
-                tabla_final.columns = ['Marca', 'Total Modelos', '% Alta Gama o Superior']
+                tabla_final.columns = [ 'Marca', 'Total Modelos', '% Alta Gama o Superior']
                 
                 st.dataframe(
                     tabla_final,
                     hide_index=True,
                     use_container_width=True,
                     column_config={
+                        "Marca": st.column_config.TextColumn(
+                            "Marca",
+                            width="small"
+                        ),
+
+                        "Total Modelos": st.column_config.NumberColumn(
+                            "Total Modelos",
+                            width="small"
+                        ),
+
                         "% Alta Gama o Superior": st.column_config.ProgressColumn(
                             "% Alta Gama o Superior",
                             help="Porcentaje combinado de modelos en segmentos exclusivos",
                             format="%.1f%%",
                             min_value=0,
-                            max_value=100
+                            max_value=100,
+                            width="medium"
                         )
                     }
                 )
@@ -560,7 +678,7 @@ with tab4:
 
     st.markdown("""
     <div class="hero-card">
-        <h2 style="color:white;">Grabado Exclusivo Personalizado</h2>
+        <h3 style="color:#F5E6C8;">Grabado Exclusivo Personalizado</h3>
         <p style="color:#E2E8F0; font-size:16px;">
         Como elemento diferenciador de la experiencia de compra,
         los clientes seleccionados recibirán un grabado exclusivo
